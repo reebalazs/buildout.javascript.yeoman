@@ -84,12 +84,6 @@ module.exports = function(grunt) {
           'dist/slickgrid.upstream.js':
             collect.local().select('slickgrid.upstream.js')
         }
-      },
-      css: {
-        files: {
-          'src/substanced/substanced/sdi/static/css/slick.grid.upstream.css':
-            collect.local().select('slick.grid.upstream.css')
-        }
       }
     },
     uglify: {
@@ -106,25 +100,21 @@ module.exports = function(grunt) {
     less: {
       'default': {
         options: {
-          paths: ['src/substanced/substanced/sdi/static/css']
+          paths: ['src/slickgrid/examples']
         },
         files: {
-          'dist/sdi_bootstrap.css':
-            collect.local().select('sdi_bootstrap.css'),
-          'dist/sdi_slickgrid.css':
-            collect.local().select('sdi_slickgrid.css')
+          'src/slickgrid/examples/example-bootstrap.css':
+            collect.local().select('example-bootstrap.css')
         }
       },
       minify: {
         options: {
-          paths: ['src/substanced/substanced/sdi/static/css'],
+          paths: ['src/slickgrid/examples'],
           yuicompress: true
         },
         files: {
-          'src/substanced/substanced/sdi/static/css/sdi_bootstrap.css':
-            collect.local().select('sdi_bootstrap.css'),
-          'src/substanced/substanced/sdi/static/css/sdi_slickgrid.css':
-            collect.local().select('sdi_slickgrid.css')
+          'src/slickgrid/examples/example-bootstrap.css':
+            collect.local().select('example-bootstrap.css')
         }
       }
     },
@@ -135,15 +125,13 @@ module.exports = function(grunt) {
       'default': {
         files:
             collect.local().select('slickgrid.upstream.js') +
-            collect.local().select('sdi_bootstrap.css') +
-            collect.local().select('sdi_slickgrid.css'),
+            collect.local().select('example-bootstrap.css'),
         tasks: ['concat:js', 'concat:css', 'less:default']
       },
       minify: {
         files:
             collect.local().select('slickgrid.upstream.js') +
-            collect.local().select('sdi_bootstrap.css') +
-            collect.local().select('sdi_slickgrid.css'),
+            collect.local().select('example-bootstrap.css'),
         tasks: ['uglify:js', 'concat:css', 'less:minify']
       }
     }
@@ -155,13 +143,10 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-less');
 
-
   // Default task(s).
-  grunt.registerTask('default', ['concat:js', 'concat:css', 'less:default']);
-  grunt.registerTask('minify', ['uglify:js', 'concat:css', 'less:minify']);
-
+  grunt.registerTask('default', ['concat:js', 'less:default']);
+  grunt.registerTask('minify', ['uglify:js', 'less:minify']);
   grunt.registerTask('watch-default', ['watch:default']);
   grunt.registerTask('watch-minify', ['watch:minify']);
-
 
 };

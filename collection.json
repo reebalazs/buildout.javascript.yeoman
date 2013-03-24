@@ -18,14 +18,7 @@
     "src/slickgrid/plugins/slick.responsiveness.js",
     "src/slickgrid/bootstrap/bootstrap-slickgrid.js"
   ],
-  "slick.grid.upstream.css": [
-    "src/slickgrid/slick.grid.css",
-    "src/slickgrid/controls/slick.columnpicker.css"
-  ],
-  "sdi_bootstrap.css": [
-    "src/substanced/substanced/sdi/static/css/sdi_bootstrap.less"
-  ],
-  "sdi_slickgrid.css": [
-    "src/substanced/substanced/sdi/static/css/sdi_slickgrid.less"
+  "example-bootstrap.css": [
+    "src/slickgrid/examples/example-bootstrap.less"
   ]
 }
