@@ -12,6 +12,7 @@ develop-eggs/
 *.sw?
 .*.sw?
 src/slickgrid/
+src/grunt-collection-helper/
 .DS_Store
 .codeintel/
 .coverage
@@ -19,3 +20,4 @@ src/slickgrid/
 node_modules/
 components/
 dist/
+.Python
