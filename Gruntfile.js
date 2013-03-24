@@ -1,62 +1,76 @@
 
+/*
+
+    collect.local().select('slick.grid.upstream.css')
+    collect.local('path/to/config/').select('slick.grid.upstream.css')
+
+
+    collect.bower('slickgrid').select('main')
+
+    collect.bower('foo').select({'option1': 'value1'})        // uses collection.js
+
+
+ */
+
+var path = require('path');
+var grunt = require('grunt');
+
+function Collection(base) {
+  this.base = base;
+  this.jsonPath = path.join(base, 'collection.json');
+  this.config = grunt.file.readJSON(this.jsonPath);
+}
+
+Collection.prototype = {
+
+  constructor: Collection,
+
+  select: function(key) {
+    if (typeof key === 'string') {
+      var config = this.config[key];
+      if (config === undefined) {
+        throw new Error('Bad config, no such key "' + key +
+          '" in file "' + this.jsonPath + '".');
+      }
+      if (! Array.isArray(config)) {
+        throw new Error('Bad config, value must be an array for key "' + key +
+          '" in file "' + this.jsonPath + '".');
+      }
+      // paths relative from json file path
+      var result = [];
+      for (var i = 0; i < config.length; i++) {
+        result.push(path.join(this.base, config[i]));
+      }
+      return result;
+    } else {
+      throw new Error('Not yet supported.');
+    }
+  }
+
+};
+
+var collect = {
+
+  local: function (/*optional*/ base) {
+    // base parameter specifies the root location, place of collection.json
+    if (base === undefined) {
+      // grunt makes sure that we are cwd to the gruntfile's location,
+      // this will make everything relative to the gruntfile.
+      base = '.';
+    }
+    return new Collection(base);
+  },
+
+  bower: function (pkgName) {
+    // Bower's packages are under components/${pkgName}
+    var base = path.join('components', pkgname);
+    return new Collection(base);
+  }
+
+};
+
 
 module.exports = function(grunt) {
-
-
-  var jsFiles = {
-    'src/substanced/substanced/sdi/static/js/slickgrid.upstream.js': [
-      'src/slickgrid/plugins/slick.responsiveness.js',
-      'src/slickgrid/bootstrap/bootstrap-slickgrid.js',
-      'src/slickgrid/lib/jquery-ui-1.8.16/jquery.ui.core.js',
-      'src/slickgrid/lib/jquery-ui-1.8.16/jquery.ui.widget.js',
-      'src/slickgrid/lib/jquery-ui-1.8.16/jquery.ui.mouse.js',
-      'src/slickgrid/lib/jquery-ui-1.8.16/jquery.ui.resizable.js',
-      'src/slickgrid/lib/jquery-ui-1.8.16/jquery.ui.sortable.js',
-      'src/slickgrid/lib/jquery.event.drag-2.0.min.js',
-      'src/slickgrid/lib/jquery.event.drop-2.0.min.js',
-      'src/slickgrid/slick.dataview.js',
-      'src/slickgrid/slick.core.js',
-      'src/slickgrid/slick.grid.js',
-      'src/slickgrid/plugins/slick.rowselectionmodel.js',
-      'src/slickgrid/plugins/slick.checkboxselectcolumn.js',
-      'src/slickgrid/plugins/slick.responsiveness.js',
-      'src/slickgrid/bootstrap/bootstrap-slickgrid.js'
-    ]
-  };
-  var cssFiles = {
-    'src/substanced/substanced/sdi/static/css/slick.grid.upstream.css': [
-      'src/slickgrid/slick.grid.css',
-      'src/slickgrid/controls/slick.columnpicker.css'
-    ]
-  };
-  var lessFiles = {
-    'src/substanced/substanced/sdi/static/css/sdi_bootstrap.css': [
-      'src/substanced/substanced/sdi/static/css/sdi_bootstrap.less'
-    ],
-    'src/substanced/substanced/sdi/static/css/sdi_slickgrid.css': [
-      'src/substanced/substanced/sdi/static/css/sdi_slickgrid.less'
-    ]
-  };
-
-
-  // provide a flat listing of source files for watch
-  var allFiles = [];
-  for(var prop in jsFiles) {
-    if (jsFiles.hasOwnProperty(prop)) {
-      allFiles = allFiles.concat(jsFiles[prop]);
-    }
-  }
-  for(prop in cssFiles) {
-    if (cssFiles.hasOwnProperty(prop)) {
-      allFiles = allFiles.concat(cssFiles[prop]);
-    }
-  }
-  for(prop in lessFiles) {
-    if (lessFiles.hasOwnProperty(prop)) {
-      allFiles = allFiles.concat(lessFiles[prop]);
-    }
-  }
-
 
   // Project configuration.
   grunt.initConfig({
@@ -66,10 +80,16 @@ module.exports = function(grunt) {
         banner: '/*! Built by <%= pkg.name %> */\n'
       },
       js: {
-        files: jsFiles
+        files: {
+          'dist/slickgrid.upstream.js':
+            collect.local().select('slickgrid.upstream.js')
+        }
       },
       css: {
-        files: cssFiles
+        files: {
+          'src/substanced/substanced/sdi/static/css/slick.grid.upstream.css':
+            collect.local().select('slick.grid.upstream.css')
+        }
       }
     },
     uglify: {
@@ -77,7 +97,10 @@ module.exports = function(grunt) {
         banner: '<%= concat.options.banner %>'
       },
       js: {
-        files: jsFiles
+        files: {
+          'dist/slickgrid.upstream.js':
+            collect.local().select('slickgrid.upstream.js')
+        }
       }
     },
     less: {
@@ -85,14 +108,24 @@ module.exports = function(grunt) {
         options: {
           paths: ['src/substanced/substanced/sdi/static/css']
         },
-        files: lessFiles
+        files: {
+          'dist/sdi_bootstrap.css':
+            collect.local().select('sdi_bootstrap.css'),
+          'dist/sdi_slickgrid.css':
+            collect.local().select('sdi_slickgrid.css')
+        }
       },
       minify: {
         options: {
           paths: ['src/substanced/substanced/sdi/static/css'],
           yuicompress: true
         },
-        files: lessFiles
+        files: {
+          'src/substanced/substanced/sdi/static/css/sdi_bootstrap.css':
+            collect.local().select('sdi_bootstrap.css'),
+          'src/substanced/substanced/sdi/static/css/sdi_slickgrid.css':
+            collect.local().select('sdi_slickgrid.css')
+        }
       }
     },
     watch: {
@@ -100,11 +133,17 @@ module.exports = function(grunt) {
         debounceDelay: 250
       },
       'default': {
-        files: allFiles,
+        files:
+            collect.local().select('slickgrid.upstream.js') +
+            collect.local().select('sdi_bootstrap.css') +
+            collect.local().select('sdi_slickgrid.css'),
         tasks: ['concat:js', 'concat:css', 'less:default']
       },
       minify: {
-        files: allFiles,
+        files:
+            collect.local().select('slickgrid.upstream.js') +
+            collect.local().select('sdi_bootstrap.css') +
+            collect.local().select('sdi_slickgrid.css'),
         tasks: ['uglify:js', 'concat:css', 'less:minify']
       }
     }
