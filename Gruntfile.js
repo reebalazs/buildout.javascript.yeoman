@@ -27,7 +27,9 @@ module.exports = function(grunt) {
       js: {
         files: {
           'dist/slickgrid.upstream.js':
-            collect.local().select('slickgrid.upstream.js')
+            collect.local().select('slickgrid.upstream.js'),
+          'dist/jquery.js':
+            collect.bower('jquery').select('jquery.js')
         }
       }
     },
@@ -38,7 +40,9 @@ module.exports = function(grunt) {
       js: {
         files: {
           'dist/slickgrid.upstream.js':
-            collect.local().select('slickgrid.upstream.js')
+            collect.local().select('slickgrid.upstream.js'),
+          'dist/jquery.js':
+            collect.bower('jquery').select('jquery.js')
         }
       }
     },
