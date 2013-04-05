@@ -73,14 +73,14 @@ module.exports = function(grunt) {
       },
       'default': {
         files:
-            collect.local().select('slickgrid.upstream.js') +
-            collect.local().select('example-bootstrap.css'),
+            collect.local().select('slickgrid.upstream.js').concat(
+            collect.local().select('example-bootstrap.css')),
         tasks: ['concat:js', 'concat:css', 'less:default']
       },
       minify: {
         files:
-            collect.local().select('slickgrid.upstream.js') +
-            collect.local().select('example-bootstrap.css'),
+            collect.local().select('slickgrid.upstream.js').concat(
+            collect.local().select('example-bootstrap.css')),
         tasks: ['uglify:js', 'concat:css', 'less:minify']
       }
     }
